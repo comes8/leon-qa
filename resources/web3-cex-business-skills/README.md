@@ -1,8 +1,10 @@
 # Web3 CEX 业务测试 Skills
 
+全局知识库和 Skill/Prompt 规范遵循平台工作区约定；本目录只维护 Web3 CEX 业务方法、Prompt 和可复查资料。
+
 面向现货撮合、合约交易和资金账务的需求分析与业务测试设计。执行沿用已有测试平台；这里维护业务分析方法、任务 Prompt 和可复查样例。
 
-当前已交付 **9 个业务 Skill、14 份 Prompt**。每个 Skill 自包含，可直接消费原始资料，也可复用上一阶段产物，不要求安装整套规划能力。
+当前已交付 **9 个业务 Skill、15 份 Prompt**。每个 Skill 自包含，可直接消费原始资料，也可复用上一阶段产物，不要求安装整套规划能力。
 
 | 阶段 | Skill | 配套 Prompt |
 |---|---|---|
@@ -15,6 +17,7 @@
 | 合约与风险专项 | [cex-futures-risk](cex-futures-risk/SKILL.md) | [P11 合约专项](prompts/P11-futures-risk.md) |
 | 资金与对账专项 | [cex-funds-reconciliation](cex-funds-reconciliation/SKILL.md) | [P12 资金专项](prompts/P12-funds-reconciliation.md) |
 | 变更影响与回归 | [cex-change-regression](cex-change-regression/SKILL.md) | [P13 变更影响](prompts/P13-change-impact.md)、[P14 回归选择](prompts/P14-regression-selection.md) |
+| 外部交易所规则映射 | 复用相关业务 Skill | [P15 Binance API 映射](prompts/P15-binance-api-rule-mapping.md) |
 
 ## 第一批
 
@@ -51,11 +54,11 @@
 - 沿已知依赖分析共享计算、历史对象、灰度事件和回滚版本，不凭 API 路径判断影响。
 - 先列完整必要回归，再安排预算内先行集；规则未定和能力受阻仍保留风险，不继承旧版通过。
 
-详见 [第四批应用与复核](evals/batch-04/results/batch-04-evaluation.md)。这些合成样例用于检查业务设计行为，不是 N-Tester、实际实现或发版验收结果。
+详见 [第四批应用与复核](evals/batch-04/results/batch-04-evaluation.md)。这些合成样例用于检查业务设计行为，不是 N-Tester、实际实现或发版验收结果。P01-P14 是四批 CEX 业务 Prompt 的历史交付；P15 是新增的 Binance 外部规则映射 Prompt，不改变历史评估记录。
 
 ## 使用与交接
 
-可按“需求分析 → 业务模型 → 测试点 → 测试点评审 → 详细用例与评审 → 变更影响及回归”使用，现货、合约和资金专项按需求穿插，也可只选一个阶段。Prompt 的双花括号是有意保留的输入变量，替换为实际资料或附件引用即可。
+可按“需求分析 → 业务模型 → 测试点 → 测试点评审 → 详细用例与评审 → 变更影响及回归”使用，现货、合约和资金专项按需求穿插，也可只选一个阶段。需要参考 Binance 规则时使用 P15 做外部规则映射，不能直接把外部资料当作项目规则。Prompt 的双花括号是有意保留的输入变量，替换为实际资料或附件引用即可。
 
 ```text
 使用 $cex-business-modeling，依据这些需求和现有分析梳理相关业务链路、状态和资金关系。
@@ -69,6 +72,6 @@
 
 ## 平台边界
 
-Prompt 可独立作为任务指令。接入 N-Tester 等平台时，需要核对阶段、字段和输出格式；普通 Markdown 报告不能冒充接口场景 JSON 或已写入的测试资产。本系列不另建接口/UI/性能执行框架，不执行交易或压测。
+Prompt 可独立作为任务指令。接入 N-Tester 等平台时，需要核对阶段、字段和输出格式；普通 Markdown 报告不能冒充接口场景 JSON 或已写入的测试资产。Binance 资料仅作为外部参考，必须登记映射状态和项目证据。本系列不另建接口/UI/性能执行框架，不执行交易或压测。
 
 Skill 负责可复用的方法与边界，Prompt 负责一次任务的输入和交付要求；两者分别存放，可按需要单独使用。本目录保存四批原始评估与修订记录，不以新结论覆盖历史输出。

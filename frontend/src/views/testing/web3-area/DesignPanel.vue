@@ -8,6 +8,11 @@
 			<div class="buttons">
 				<el-button :disabled="submitting" @click="refreshTask">刷新设计</el-button
 				><el-button @click="router.push({ path: '/web3/assets', query: context() })">知识与技能</el-button
+				><el-button
+					v-if="section === 'cases'"
+					:disabled="!state.task"
+					@click="router.push({ path: '/web3/scenarios', query: { ...context(), view: 'business' } })"
+					>适配接口场景</el-button
 				><el-button :disabled="!state.task || submitting" @click="exportTask">导出设计记录</el-button
 				><el-button type="primary" :disabled="!state.project || submitting" @click="openTask(false)">新建业务设计</el-button>
 			</div>

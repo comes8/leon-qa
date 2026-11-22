@@ -15,10 +15,7 @@ from app.api.v1.Ntesterc_module.Ntesterc_project.service import ProjectService
 
 
 SOURCE_KEY = 'web3-cex-business-skills'
-# Bundled document pack; an explicit environment override may select another pack.
-import os
-SOURCE_ROOT = Path(os.environ.get('LEON_QA_BUSINESS_ASSETS') or
-                   Path(__file__).resolve().parents[6] / 'resources/web3-cex-business-skills')
+SOURCE_ROOT = Path('/Users/Admin1/Developer/skill/web3-cex-business-skills')
 SKILL_STAGES = {
     'cex-requirement-review': ('需求分析', 'P01', 'P02'),
     'cex-business-modeling': ('业务建模', 'P03', 'P04'),
@@ -70,7 +67,9 @@ def scan_bundle(root: Path) -> dict:
     """Read only the documented pack layout, excluding evals and executables."""
     if root.is_symlink() or not root.is_dir():
         raise ValueError('登记的业务资料目录不存在或为符号链接')
-    paths = [root / 'README.md']
+    # The pack may also provide shared reference documents at its root.
+    # They are immutable source material; only Markdown documents are imported.
+    paths = [root / 'README.md', *sorted((root / 'references').glob('*.md'))]
     skills, prompts = [], []
     for entry in sorted(root.glob('*/SKILL.md')):
         record = _read(root, entry)

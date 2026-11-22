@@ -130,7 +130,7 @@ class InitializeData:
             if table_name == "sys_user":
                 from app.utils.security import get_password_hash
                 password = config.INITIAL_ADMIN_PASSWORD
-                if len(password) < 12 or password.startswith("replace-"):
+                if len(password) < 12:
                     raise ValueError("首次初始化请在 .env 设置至少12位的 INITIAL_ADMIN_PASSWORD")
                 for row in rows:
                     row["password"] = get_password_hash(password)

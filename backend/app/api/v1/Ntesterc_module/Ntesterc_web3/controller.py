@@ -9,6 +9,7 @@ from . import service as S
 from .mock import router as mock_router
 from .workspace_controller import router as workspace_router
 from .design_controller import router as design_router
+from .interface_controller import router as interface_router
 from .model import Web3WorkflowModel
 from .schema import ApproveWorkflow, CreateWorkflow, ExecuteWorkflow, UpdateAnalysis, UpdateDraft
 
@@ -16,6 +17,7 @@ router = APIRouter()
 router.include_router(mock_router, prefix='/mock')
 router.include_router(workspace_router, prefix='/workspace')
 router.include_router(design_router, prefix='/design')
+router.include_router(interface_router, prefix='/interfaces')
 
 
 @router.get('/options')
@@ -25,10 +27,12 @@ async def get_options(project_id: int, db: AsyncSession = Depends(get_db), user:
 
 @router.get('/workflows')
 async def workflows(project_id: int, db: AsyncSession = Depends(get_db), user: int = Depends(get_current_user_id)):
+    from .interface_model import InterfacePlan
     await S.ProjectService._check_project_member(project_id, user, db)
     rows = (await db.scalars(select(Web3WorkflowModel).where(
         Web3WorkflowModel.project_id == project_id, Web3WorkflowModel.created_by == user,
         Web3WorkflowModel.enabled_flag == 1,
+        ~Web3WorkflowModel.id.in_(select(InterfacePlan.workflow_id)),
     ).order_by(Web3WorkflowModel.id.desc()).limit(50))).all()
     return success_response([{'id': row.id, 'title': row.title, 'status': row.status, 'updated_at': row.updation_date.isoformat()} for row in rows])
 

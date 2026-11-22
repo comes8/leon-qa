@@ -1,90 +1,1091 @@
-# Leon QA · Web3 测试工作台
+# Leon QA Web3 测试工作台
 
-用于组织现货、合约、资金与链上业务的需求分析、测试设计、接口调试、自动化执行和结果追踪。
+<div align="center">
 
-## 主要内容
+**基于 FastAPI + Vue3 的AI智能化全栈测试管理平台**
 
-- **Web3 测试专区**：需求与规则、业务建模、测试点、用例、评审和版本记录。
-- **业务资料**：仓库自带 9 个业务 Skill、14 个 Prompt 和 25 份参考文档，可按项目导入知识库。
-- **接口测试**：接口中心、环境配置、数据依赖、断言、串行场景与执行记录。
-- **AI 辅助**：按项目配置模型与 writer/reviewer；生成内容经评审后再用于测试。
-- **本地模拟业务**：现货、合约、资金和 DEX 的隔离夹具，用于练习和确定性回归。模拟规则不代表真实交易所全部规则。
-- **项目执行器**：登记外部测试项目后运行对应检查，收集真实执行证据。
+一个集成AI智能、API测试、UI自动化、数据工厂、评审管理等功能的企业级测试平台
 
-技术栈：Vue 3 + TypeScript + Vite / FastAPI + SQLAlchemy / SQLite、MySQL 或 PostgreSQL / Redis。
+[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-green.svg)](https://fastapi.tiangolo.com/)
+[![Vue](https://img.shields.io/badge/Vue-3.5.8-brightgreen.svg)](https://vuejs.org/)
 
-## 本地启动（源码方式）
+</div>
 
-准备 Python 3.12、Node.js 22.12+、Redis 和 uv。后端支持 Python 3.11–3.12。
+---
+## 本机工作台
+
+当前安装访问 <http://127.0.0.1:18170>，在项目目录执行 `./leonqa start` 启动。
+
+- [Web3 测试专区](README_WEB3_WORKSPACE.md)：需求、测试点、用例、接口场景、数据、调试、执行和证据。
+- [Web3 工作流](README_WEB3.md)：本机模拟场景与规则设计。
+- [项目执行器](README_QA_RUNNER.md)：项目级测试任务与结果。
+- [本地运维](README_QA_OPERATIONS.md)：启动、状态、日志与依赖。
+
+以下保留开发与部署参考。实际已验证范围以各使用说明和执行证据为准。
+
+## 🌈 项目介绍
+
+Leon QA Web3 测试工作台是一个面向企业级应用的现代化智能测试管理系统，采用前后端完全分离的架构设计，集成了AI智能测试、API接口测试、UI自动化测试、数据工厂、评审管理等多个核心功能模块。
+
+**核心特性：**
+- 🤖 AI智能测试：集成大语言模型，智能生成测试用例和执行测试
+- 🔌 API接口测试：完整的API测试生命周期管理
+- 🖥️ UI自动化测试：支持Web UI自动化测试执行和管理
+- 🏭 数据工厂：强大的测试数据生成和管理工具
+- 📋 评审管理：完善的测试用例评审流程
+- 📊 智能报告：可视化测试报告和数据分析
+- 🔐 完整的 RBAC 权限管理体系
+- 📱  统一通知系统：支持飞书、钉钉、微信、Telegram、邮件等多种通知方式
+- 🎯 动态路由注册，配置即可分配权限
+- 🛡️ 多层级权限控制（菜单权限、按钮权限、数据权限、API权限）
+- 📊 完善的日志管理系统（登录日志、操作日志）
+- 🎨 支持主题切换和暗黑模式
+- 📦 Docker 一键部署
+- ⚡ 异步高性能架构
+
+---
+
+## 📋 技术栈
+
+### 环境要求
+
+| 技术        | 版本      | 说明      |
+|-----------|---------|---------|
+| Python    | < 3.13  | 后端运行环境  |
+| Node.js   | 20.0 | 前端构建环境  |
+| MySQL / PostgreSQL / SQLite | 8.0+ / 14+ / 3 | 主数据库（`.env` 中 `DATABASE_TYPE` 切换） |
+| Redis     | 6.0.9   | 缓存和任务队列 |
+
+### 后端技术栈
+
+| 技术 | 版本 | 用途 |
+|------|------|------|
+| FastAPI | 0.111.0 | 异步 Web 框架 |
+| SQLAlchemy | 2.0.3 | 异步 ORM |
+| Pydantic | 2.7.3 | 数据验证 |
+| Alembic | 1.13.1 | 数据库迁移 |
+| Celery | 5.2.7 | 异步任务队列 |
+| Redis | 5.0.4 | 缓存和消息队列 |
+| Loguru | 0.6.0 | 日志系统 |
+| python-jose | 3.3.0 | JWT 认证 |
+| aiomysql / asyncpg / aiosqlite | — | 异步数据库驱动（按方言） |
+
+### 前端技术栈
+
+| 技术 | 版本 | 用途 |
+|------|------|------|
+| Vue | 3.5.8 | 渐进式框架 |
+| Vite | 5.4.8 | 构建工具 |
+| TypeScript | 4.9.4 | 类型系统 |
+| Element Plus | 2.7.4 | UI 组件库 |
+| Pinia | 2.0.28 | 状态管理 |
+| Vue Router | 4.1.6 | 路由管理 |
+| Axios | 1.2.1 | HTTP 客户端 |
+| Monaco Editor | 0.34.1 | 代码编辑器 |
+| ECharts | 5.6.0 | 数据可视化 |
+
+---
+
+## 🏗️ 系统架构
+
+### 整体架构图
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         用户层                               │
+│                    (浏览器 / 移动端)                         │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      前端层 (Vue 3)                          │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │  路由    │  │  状态    │  │  组件    │  │  指令    │   │
+│  │ Router   │  │  Pinia   │  │ Element  │  │ 权限控制 │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└────────────────────────┬────────────────────────────────────┘
+                         │ HTTP/HTTPS
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   API 网关层 (FastAPI)                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │  认证    │  │  限流    │  │  日志    │  │  异常    │   │
+│  │ 中间件   │  │ 中间件   │  │ 中间件   │  │  处理    │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    业务逻辑层 (Services)                     │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │ AI智能   │  │ API测试  │  │ UI自动化 │  │ 数据工厂 │   │
+│  │ 测试     │  │ 服务     │  │ 服务     │  │ 服务     │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │ 评审管理 │  │ 项目管理 │  │ 通知系统 │  │ 权限管理 │   │
+│  │ 服务     │  │ 服务     │  │ 服务     │  │ 服务     │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│              数据访问层 (SQLAlchemy / Redis)                  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │  Models  │  │ Schemas  │  │  会话    │  │  Redis   │   │
+│  │  (模块内) │  │  (模块内) │  │  管理    │  │缓存/验证码│   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+         ┌───────────────┴───────────────┬──────────────┐
+         ▼                               ▼              ▼
+┌──────────────────┐          ┌──────────────┐  ┌─────────────┐
+│   MySQL 8.0      │          │  Redis       │  │   Celery    │
+│   主数据库       │          │  缓存/队列   │  │  异步任务   │
+└──────────────────┘          └──────────────┘  └─────────────┘
+```
+
+### 核心功能模块
+
+```
+Leon QA Web3 测试工作台
+├── 🤖 AI智能测试模块
+│   ├── AI对话助手          # 智能测试咨询和建议
+│   ├── 智能用例生成        # 基于需求自动生成测试用例
+│   ├── 智能执行引擎        # AI驱动的测试执行
+│   └── LLM配置管理         # 大语言模型配置和管理
+│
+├── 🔌 API接口测试模块
+│   ├── 接口项目管理        # API项目和环境管理
+│   ├── 接口用例设计        # 接口测试用例编写
+│   ├── 批量执行引擎        # 批量接口测试执行
+│   ├── 断言验证系统        # 多种断言规则支持
+│   └── 测试报告生成        # 详细的测试报告
+│
+├── 🖥️ UI自动化测试模块
+│   ├── 页面元素管理        # Web元素定位和管理
+│   ├── 测试脚本编写        # 自动化测试脚本
+│   ├── 执行计划调度        # 定时和批量执行
+│   ├── 截图和录像          # 执行过程记录
+│   └── 失败重试机制        # 智能重试策略
+│
+├── 🏭 数据工厂模块
+│   ├── 数据模板管理        # 测试数据模板定义
+│   ├── 批量数据生成        # 大量测试数据生成
+│   ├── 数据关联规则        # 数据间关联关系
+│   ├── 数据导入导出        # 多格式数据交换
+│   └── 数据清理工具        # 测试数据清理
+│
+├── 📋 评审管理模块
+│   ├── 评审流程配置        # 自定义评审流程
+│   ├── 用例评审管理        # 测试用例评审
+│   ├── 评审意见收集        # 评审意见和建议
+│   ├── 评审报告生成        # 评审结果报告
+│   └── 评审统计分析        # 评审效率分析
+│
+├── 📊 项目管理模块
+│   ├── 项目信息管理        # 项目基本信息
+│   ├── 成员权限管理        # 项目成员和权限
+│   ├── 环境配置管理        # 测试环境配置
+│   ├── 版本管理系统        # 项目版本控制
+│   └── 进度跟踪统计        # 项目进度监控
+│
+├── 📱 通知系统模块
+│   ├── 多渠道通知支持      # 飞书/钉钉/微信/邮件/Telegram
+│   ├── 通知模板管理        # 自定义通知模板
+│   ├── 通知历史记录        # 通知发送历史
+│   ├── 任务通知设置        # 任务相关通知配置
+│   └── 通知统计分析        # 通知效果分析
+│
+├── 🔐 系统管理模块
+│   ├── 用户管理系统        # 用户账号管理
+│   ├── 角色权限管理        # RBAC权限体系
+│   ├── 菜单路由管理        # 动态菜单配置
+│   ├── 操作日志管理        # 系统操作审计
+│   └── 系统监控面板        # 系统状态监控
+│
+└── 📈 数据分析模块
+    ├── 测试数据统计        # 测试执行统计
+    ├── 质量趋势分析        # 质量指标趋势
+    ├── 效率分析报告        # 测试效率分析
+    ├── 可视化图表          # 多维度数据展示
+    └── 自定义报表          # 个性化报表定制
+```
+
+### 后端分层架构
+
+业务模块采用 **Controller / Service / CRUD / Model / Schema 同目录** 的分层方式（不单独拆 `models/`、`services/` 大目录）。
+
+```
+backend/
+├── main.py                 # FastAPI 入口（uvicorn）
+├── celery_app.py           # Celery -A 入口
+├── alembic.ini
+├── .env / .env.example     # 环境配置（DATABASE_TYPE 等）
+├── pyproject.toml          # 依赖真源（uv sync）
+├── requirements*.txt       # pip / Docker 兼容
+│
+├── app/
+│   ├── config/             # 配置层
+│   │   ├── setting.py      # pydantic_settings（读 .env）
+│   │   ├── db_url.py       # 多方言 SQLAlchemy / Redis URL
+│   │   └── path_conf.py    # 路径常量
+│   ├── core/               # 框架内核
+│   │   ├── database.py     # SQLAlchemy 引擎 / Session / create_all
+│   │   ├── redis.py        # Redis 连接池
+│   │   ├── storage/        # MinIO 等对象存储
+│   │   ├── register/       # 启动装配：路由、CORS、限流、调度…
+│   │   ├── middlewares.py  # 请求日志 / 追踪中间件
+│   │   ├── exceptions.py   # 全局异常处理
+│   │   ├── db_base.py      # ORM Base
+│   │   └── …               # CRUD/Model/Schema 基类、权限、日志、OAuth
+│   ├── common/             # 统一响应、常量、枚举
+│   ├── utils/              # 通用工具
+│   ├── scripts/            # 应用内脚本（如 initialize 自举建表+种子）
+│   ├── alembic/            # 迁移脚本（versions/）；模型自动扫描
+│   ├── api/v1/             # 业务 API（按模块分包）
+│   │   ├── system/         # 认证/用户/角色/菜单/部门/字典/日志…
+│   │   ├── monitor/        # 在线用户、系统监控
+│   │   ├── common/         # 公共接口
+│   │   └── Ntesterc_module/
+│   │       ├── Ntesterc_api/            # 接口自动化
+│   │       ├── Ntesterc_ai/             # AI 对话、LLM 配置
+│   │       ├── Ntesterc_performance/    # 性能测试
+│   │       ├── Ntesterc_web/ / _app/    # UI / App 自动化
+│   │       ├── Ntesterc_task_scheduler/ # 定时任务 + Celery
+│   │       └── …                      # project / notifications / reviews 等
+│   └── static/             # 应用内静态产物
+│
+├── scripts/                # 运维 CLI（勿堆在 backend 根）
+│   ├── cli.py              # init-db / seed / check / Alembic
+│   ├── sql_to_seed_json.py # MySQL dump → sql/seed/*.json
+│   └── run_portable.py / portable_env.py / …
+├── sql/
+│   ├── seed/               # 方言无关 JSON 种子（启动幂等导入）
+│   └── db_init.sql         # 历史 MySQL dump（可选参考）
+├── deploy/                 # Dockerfile、Celery runner
+├── static/                 # swagger 等对外静态资源
+├── docs/                   # 后端开发说明
+└── tests/
+```
+
+**分层约定**
+
+| 包 | 职责 |
+|----|------|
+| `app/config` | 环境与连接串，无业务逻辑 |
+| `app/core` | 数据库/缓存/中间件/注册/基类等基础设施 |
+| `app/common` | 响应体、枚举、常量 |
+| `app/api` | 业务模块（Controller / Service / CRUD / Model / Schema **同目录**） |
+
+**单模块约定**（示例：`app/api/v1/system/user/`）：
+
+```
+controller.py   # 路由
+service.py      # 业务
+crud.py         # 数据访问
+model.py        # ORM（会被 ImportUtil 自动扫描）
+schema.py       # Pydantic 入参/出参
+```
+
+**配置导入**（已取消根目录 `config.py`）：
+
+```python
+from app.config.setting import config
+# 或
+from app.config import config, BACKEND_ROOT
+```
+
+### 前端目录架构
+
+```
+frontend/src/
+├── api/v1/                 # 按域封装的后端接口
+│   ├── system/             # 认证、用户、角色、菜单…
+│   ├── testing/            # 接口/性能/UI/App/调度等测试 API
+│   ├── projects/           # 项目管理
+│   ├── ai/                 # AI 对话与 LLM 配置
+│   ├── notifications/      # 通知
+│   ├── reviews/            # 评审
+│   ├── monitor/            # 监控
+│   └── common/             # 公共接口
+│
+├── views/
+│   ├── login/              # 登录（验证码走后端 Redis）
+│   ├── home/               # 首页
+│   ├── system/             # 系统管理
+│   ├── projects/           # 项目管理
+│   ├── testing/            # 测试能力
+│   │   ├── api-automation/ # 接口自动化 / 脚本中心 / 代码生成
+│   │   ├── performance/    # 性能测试
+│   │   ├── ui-automation/  # UI 自动化
+│   │   ├── app-management/ # App 自动化
+│   │   ├── data-factory/   # 数据工厂
+│   │   ├── scheduler/      # 任务调度
+│   │   └── …               # precision-test / cloud-device 等
+│   ├── ai/                 # AI 智能测试
+│   ├── notifications/      # 通知
+│   ├── reviews/            # 评审
+│   ├── monitor/            # 监控
+│   ├── assistant/          # 助手
+│   └── error/              # 错误页
+│
+├── components/             # 公共组件（Captcha、monaco、表格等）
+├── stores/                 # Pinia（user / themeConfig …）
+├── router/                 # 路由（含后端菜单驱动）
+├── utils/                  # request、storage、权限等
+└── theme/                  # 主题样式
+```
+
+---
+
+## ✨ 核心特性
+
+### 🤖 AI智能测试模块
+
+#### 1. AI对话助手
+- **智能咨询**：基于大语言模型的测试咨询和建议
+- **上下文理解**：理解项目背景，提供针对性建议
+- **多轮对话**：支持连续对话，深入探讨测试问题
+- **知识库集成**：集成测试最佳实践和经验知识
+
+#### 2. 智能用例生成
+- **需求分析**：自动分析需求文档，提取测试点
+- **用例生成**：基于需求自动生成结构化测试用例
+- **边界值分析**：智能识别边界条件和异常场景
+- **用例优化**：根据历史数据优化用例覆盖率
+
+#### 3. 智能执行引擎
+- **自适应执行**：根据执行结果动态调整测试策略
+- **异常处理**：智能识别和处理执行过程中的异常
+- **结果分析**：自动分析测试结果，生成问题报告
+- **持续学习**：从执行历史中学习，提升测试效率
+
+### 🔌 API接口测试模块
+
+#### 1. 完整的API测试生命周期
+- **项目管理**：支持多项目、多环境的API测试管理
+- **接口设计**：可视化接口用例设计和参数配置
+- **批量执行**：支持单个、批量、定时执行测试用例
+- **断言验证**：多种断言规则，支持JSON Path、正则表达式等
+
+#### 2. 高级测试功能
+- **数据驱动**：支持Excel、CSV等数据源驱动测试
+- **参数化测试**：动态参数替换和数据关联
+- **前置后置**：支持前置条件和后置清理操作
+- **Mock服务**：内置Mock服务，支持接口模拟
+
+#### 3. 测试报告和分析
+- **详细报告**：生成详细的测试执行报告
+- **趋势分析**：测试结果趋势分析和质量监控
+- **性能监控**：接口响应时间和性能指标监控
+- **失败分析**：自动分析失败原因，提供修复建议
+
+### 🖥️ UI自动化测试模块
+
+#### 1. 元素管理系统
+- **智能定位**：多种元素定位策略，提高稳定性
+- **元素库管理**：统一管理页面元素，支持复用
+- **动态等待**：智能等待机制，处理页面加载时序
+- **元素验证**：自动验证元素有效性，及时发现变更
+
+#### 2. 脚本编写和执行
+- **可视化编写**：拖拽式脚本编写，降低技术门槛
+- **代码生成**：自动生成Selenium/Playwright代码
+- **并发执行**：支持多浏览器并发执行测试
+- **失败重试**：智能重试机制，提高执行稳定性
+
+#### 3. 执行监控和报告
+- **实时监控**：实时查看测试执行状态和进度
+- **截图录像**：自动截图和录像，记录执行过程
+- **详细日志**：完整的执行日志，便于问题定位
+- **Allure报告**：集成Allure，生成专业测试报告
+
+### 🏭 数据工厂模块
+
+#### 1. 数据模板管理
+- **模板定义**：灵活定义数据模板和生成规则
+- **数据类型**：支持多种数据类型和格式
+- **关联规则**：定义数据间的关联关系和约束
+- **版本管理**：数据模板版本控制和变更管理
+
+#### 2. 批量数据生成
+- **大量生成**：支持百万级测试数据快速生成
+- **多格式导出**：支持Excel、CSV、JSON、SQL等格式
+- **数据校验**：生成数据的完整性和一致性校验
+- **增量生成**：支持增量数据生成和更新
+
+#### 3. 数据管理工具
+- **数据清理**：测试完成后自动清理测试数据
+- **数据备份**：重要数据的备份和恢复功能
+- **数据脱敏**：生产数据脱敏处理，保护隐私
+- **数据同步**：多环境间数据同步和一致性保证
+
+### 📋 评审管理模块
+
+#### 1. 评审流程配置
+- **自定义流程**：灵活配置评审流程和节点
+- **角色权限**：不同角色的评审权限和职责
+- **审批规则**：自定义审批规则和条件
+- **通知机制**：评审状态变更自动通知相关人员
+
+#### 2. 用例评审管理
+- **在线评审**：支持在线查看和评审测试用例
+- **批注功能**：支持添加评审意见和建议
+- **版本对比**：用例版本对比，跟踪变更历史
+- **评审统计**：评审效率和质量统计分析
+
+#### 3. 评审报告和分析
+- **评审报告**：生成详细的评审结果报告
+- **问题跟踪**：评审问题的跟踪和解决状态
+- **质量分析**：用例质量分析和改进建议
+- **效率监控**：评审效率监控和流程优化
+
+### 📱 统一通知系统
+
+#### 1. 多渠道通知支持
+- **企业通讯**：飞书、钉钉、企业微信集成
+- **即时通讯**：Telegram、微信通知
+- **邮件通知**：SMTP邮件发送支持
+- **Webhook**：自定义Webhook通知
+
+#### 2. 智能通知管理
+- **通知模板**：自定义通知模板和格式
+- **通知规则**：基于条件的智能通知规则
+- **通知历史**：完整的通知发送历史记录
+- **失败重试**：通知发送失败自动重试机制
+
+### 🔐 企业级权限管理
+
+#### 1. RBAC权限体系
+- **用户管理**：完整的用户生命周期管理
+- **角色管理**：灵活的角色定义和权限分配
+- **菜单权限**：动态菜单权限控制
+- **按钮权限**：页面级按钮权限控制
+
+#### 2. 数据权限控制
+- **数据范围**：支持5种数据权限范围
+- **部门权限**：基于部门的数据权限过滤
+- **个人权限**：个人数据权限控制
+- **自定义权限**：灵活的自定义权限规则
+
+#### 3. 安全审计
+- **登录日志**：详细的用户登录行为记录
+- **操作日志**：完整的用户操作审计跟踪
+- **权限变更**：权限变更历史和审计
+- **安全监控**：异常行为检测和告警
+
+---
+
+## 🚀 快速开始
+### 方式一：Docker 部署（推荐）
+
+#### 1. 克隆项目
 
 ```bash
-git clone https://github.com/comes8/leon-qa.git
+# 进入已有 Leon QA 项目目录
 cd leon-qa
+```
+
+#### 2. 配置环境变量
+
+```bash
+# 复制环境变量文件
+cp .env.example .env
+
+# 编辑 .env 文件，配置数据库密码等信息
+```
+
+#### 3. Docker部署，启动服务
+
+```bash
+# 一键启动所有服务
+docker-compose up -d
+
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f
+```
+
+#### 4. 访问系统
+
+- 前端地址：http://localhost
+- 后端 API：http://127.0.0.1:18171
+- API 文档：http://127.0.0.1:18171/docs
+
+**管理员账号**：首次初始化时使用 `.env` 中的 `INITIAL_ADMIN_PASSWORD` 设置密码。
+
+---
+
+### 方式二：源码部署
+
+#### 后端部署
+
+##### 1. 环境准备
+
+```bash
+# 确保已安装 Python 3.11–3.12、Redis 6.0
+# 数据库任选其一：MySQL 8 / PostgreSQL 14+ / 本地 SQLite
+python --version
+redis-server --version
+```
+
+##### 2. 创建数据库（MySQL / Postgres 需先建库；SQLite 可跳过）
+
+```sql
+-- MySQL
+CREATE DATABASE ntester CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- PostgreSQL
+-- CREATE DATABASE ntester;
+```
+
+##### 3. 配置环境
+
+```bash
 cd backend
-uv sync --frozen
+
+# 复制配置文件
 cp .env.example .env
+
+# 编辑 .env：改 DATABASE_TYPE 即可切换方言（mysql / postgres / sqlite）
+# MySQL 示例：
+DATABASE_TYPE=mysql
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_USER=root
+DATABASE_PASSWORD=
+DATABASE_NAME=ntester
+DB_AUTO_INIT=true
+
+# PostgreSQL 示例：
+# DATABASE_TYPE=postgres
+# DATABASE_PORT=5432
+# DATABASE_USER=postgres
+# DATABASE_NAME=ntester
+
+# SQLite 示例（本地开发，无需独立库服务）：
+# DATABASE_TYPE=sqlite
+# DATABASE_NAME=ntester.db
 ```
 
-编辑 `backend/.env`：为 `SECRET_KEY` 和 `INITIAL_ADMIN_PASSWORD` 分别设置独立随机值（管理员密码至少 12 位）；默认使用 SQLite，Redis 端口为 `16379`。可在本机生成随机值：
+使用 pip 时需手动创建虚拟环境；使用 uv 时 `uv sync` 会自动创建 `backend/.venv`：
 
 ```bash
-python -c 'import secrets; print(secrets.token_urlsafe(32))'
+# pip 方式：创建并激活虚拟环境
+python -m venv .venv
+# Windows:  .venv\Scripts\activate
+# Linux/Mac: source .venv/bin/activate
 ```
 
-若本机没有 Redis，可单独启动开发依赖：
+##### 4. 安装依赖
+
+**方式 A：使用 uv（强烈推荐，更快）**
 
 ```bash
-docker run -d --name leonqa-dev-redis -p 127.0.0.1:16379:6379 redis:7-alpine
+cd backend
+
+# 若未安装 uv（Linux/macOS）
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 若未安装 uv（Windows PowerShell）
+# irm https://astral.sh/uv/install.ps1 | iex
+
+# 同步依赖（自动创建 .venv 虚拟环境）
+uv sync --group dev
+
+# 或使用项目根目录脚本一键安装后端+前端
+# Linux/macOS:  bash scripts/install-deps.sh
+# Windows:      powershell -ExecutionPolicy Bypass -File scripts/install-deps.ps1
 ```
 
-在后端目录启动（首次启动会创建表结构和干净的管理员账号）：
+**方式 B：使用 pip（传统方式-备选方案）**
 
 ```bash
-uv run uvicorn main:app --host 127.0.0.1 --port 18171
+# 安装依赖(linux&mac)
+pip install -r requirements.txt
+# windows 用户
+pip install -r requirements-windows.txt
 ```
 
-另一个终端启动前端：
+> 依赖定义以 `backend/pyproject.toml` 为准；`requirements.txt` / `requirements-windows.txt` 保留用于 Docker / pip 兼容。
+
+##### 5. 初始化数据库
+
+`DB_AUTO_INIT=true`（默认）时，启动会自动：扫描模型 → 空库 `create_all` → 幂等导入 `sql/seed/*.json`。
 
 ```bash
-cd leon-qa/frontend
-npm ci --legacy-peer-deps
-npm run dev:original -- --host 127.0.0.1 --port 18170 --strictPort
+# 推荐：直接启动（自动建表 + 种子）
+python main.py
+# 或
+uv run python main.py
+
+# 也可单独执行 CLI
+python scripts/cli.py check      # 检查连接与 DATABASE_TYPE
+python scripts/cli.py init-db    # create_all + 种子
+python scripts/cli.py seed       # 仅种子（表已有数据则跳过）
 ```
 
-访问 `http://127.0.0.1:18170`，账号为 `admin`，密码为首次初始化时设置的 `INITIAL_ADMIN_PASSWORD`。修改该变量不会覆盖已有账号密码。新环境需自行创建项目、导入资料，并在界面配置模型服务和测试环境。
-
-业务资料默认从 `resources/web3-cex-business-skills` 读取；如需使用其他资料包，通过环境变量 `LEON_QA_BUSINESS_ASSETS` 指定。资料导入只读取文档，不会执行 Skill 文件。
-
-## Docker Compose
+##### 6. 启动后端服务
 
 ```bash
-cp .env.example .env
-# 编辑 .env，设置两个独立随机值
-# 如果本机已有 Leon QA 占用 18170/18171，请先修改 compose 的映射端口
-docker compose up -d --build
+# 开发模式（uv，无需手动激活虚拟环境）
+uv run python main.py
+
+# 或激活虚拟环境后
+python main.py
+
+# 生产模式
+gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8100
 ```
 
-前端端口 `18170`，后端端口 `18171`，均只绑定本机。此方式使用独立的 SQLite/Redis 数据卷。业务资料只读挂载到后端。Compose 文件是单机部署入口，本次发布未执行完整容器镜像构建验证。
+##### 7. 启动 Celery（可选）
 
-根目录的 `./leonqa` 和本地运维文档保留了原工作站进程管理逻辑，依赖登记的测试项目和已有依赖容器；全新安装请先使用上面的源码方式或 Compose，而不要直接套用原工作站容器配置。
+```bash
+# Windows 启动 Worker（单线程）
+celery -A celery_app.celery worker --pool=solo -l INFO
 
-## 测试与使用说明
+# Linux 启动 Worker（多线程）
+celery -A celery_app.celery worker --loglevel=INFO -c 10 -P solo -n ntester-celery-worker
 
-后端已有的 Web3/执行器测试可以在配置好测试环境后通过 `python -m unittest` 运行。测试必须使用独立数据库，不要指向工作数据库。外部测试项目、浏览器驱动、JMeter 等执行依赖需按实际模块配置，不随源码上传。
+# 启动定时任务调度器（数据库）
+celery -A celery_app.celery beat -S app.api.v1.Ntesterc_module.Ntesterc_task_scheduler.celery_worker.scheduler.schedulers:DatabaseScheduler -l INFO
 
-- [Web3 测试专区](README_WEB3_WORKSPACE.md)
-- [Web3 场景与本地模拟](README_WEB3.md)
-- [项目执行器](README_QA_RUNNER.md)
-- [接口调试与执行](README_QA_DEBUG.md)
-- [本地运维（原工作站）](README_QA_OPERATIONS.md)
-- [历史功能开发参考](docs/PLATFORM_REFERENCE.md)
+# 启动心跳监控
+celery -A celery_app.celery beat -l INFO
+```
 
-## 公开代码范围
+#### 前端部署
 
-本仓库是整理后的当前源码快照，包含业务文档、模板、静态资源和测试。历史数据库导出、上传附件、用户账号记录、对话数据、模型密钥、本机环境配置、日志、报告和原仓库 Git 历史均未包含。新的数据库只初始化基础菜单、角色、字典和由部署者设置密码的管理员。
+##### 1. 环境准备
 
-这是持续开发中的工具；真实业务测试仍需要需求、接口文档、授权测试环境、正确的业务判据与人工评审。发布 GitHub 源码不会把本地平台部署成互联网网站。
+```bash
+# 确保已安装 Node.js >=20.0
+node -v  # v20.0
+```
 
-## 许可证
+##### 2. 安装依赖管理工具
 
-沿用项目原有 [MIT 许可证](LICENSE)，原版权声明保留。
+```bash
+
+# 安装 yarn
+npm install -g yarn
+```
+
+##### 3. 安装项目依赖
+
+```bash
+cd frontend
+
+# 方式 A：使用项目根目录脚本（推荐，与后端一并安装）
+# Linux/macOS:  bash scripts/install-deps.sh
+# Windows:      powershell -ExecutionPolicy Bypass -File scripts/install-deps.ps1
+
+# 方式 B：手动安装
+# 新建配置文件.env,添加如下内容到配置文件
+# port 端口号
+VITE_PORT=3000
+
+# open 运行 npm run dev 时自动打开浏览器
+VITE_OPEN=true
+
+# public path 配置线上环境路径（打包）、本地通过 http-server 访问时，请置空即可
+VITE_PUBLIC_PATH=/
+
+# 网站主标题（菜单导航、浏览器当前网页标题)
+VITE_GLOBAL_TITLE=Leon QA
+#网站副标题（登录页顶部文字）
+VITE_GLOBAL_VICE_TITLE=Web3 测试工作台
+
+VITE_APP_NAMESPACE=leon-qa
+
+# 安装依赖使用 yarn
+yarn install
+```
+
+##### 4. 启动开发服务器
+
+```bash
+
+# 使用 yarn
+yarn dev
+```
+
+访问：http://localhost:5173
+
+##### 5. 生产构建
+
+```bash
+# 使用 yarn
+yarn build
+
+# 构建产物在 dist/ 目录
+```
+
+---
+
+## 🗄️ 数据库管理
+
+### 多方言与自举
+
+- `.env` 中 `DATABASE_TYPE=mysql|postgres|sqlite` 切换驱动与连接串（见 `app/config/setting.py`、`db_url.py`）。
+- 模型通过 `ImportUtil` 自动扫描 `model.py`，无需在 Alembic `env.py` 手写 import 列表。
+- 种子数据在 `sql/seed/*.json`（方言无关）；历史 `sql/db_init.sql` 仅作参考，可用 `scripts/sql_to_seed_json.py` 再生成。
+
+### CLI / Alembic
+
+```bash
+# 空库建表 + 种子（推荐）
+python scripts/cli.py init-db
+
+# 检查配置与连通性
+python scripts/cli.py check
+
+# 生成 / 应用迁移（存量库增量变更）
+python scripts/cli.py revision -m "描述信息"
+python scripts/cli.py upgrade
+
+# 或直接使用 alembic
+alembic revision --autogenerate -m "描述信息"
+alembic upgrade head
+alembic downgrade -1
+alembic history
+alembic current
+```
+
+## 📸 系统截图
+
+### 登录页
+![登录页](static/img/func.png)
+
+### 首页
+![首页](static/img/index.png)
+
+### 项目管理
+![项目管理](static/img/report.png)
+
+### UI自动化管理
+![UI自动化管理](static/img/case.png)
+
+### AI用例生成
+![AI用例生成](static/img/cass.png)
+
+### AI智能对话
+![AI智能对话](static/img/aise.png)
+
+### AI智能浏览器
+![AI智能浏览器](static/img/aec.png)
+
+### 个人中心
+![个人中心1](static/img/ge.png)
+
+### 主题切换
+![主题切换1](static/img/csssb.png)
+
+---
+
+## 🔧 开发指南
+
+### 后端开发
+
+#### 添加新的 API 模块
+
+1. 在 `app/api/v1/<域>/<模块名>/` 下同目录创建：`model.py` / `schema.py` / `crud.py` / `service.py` / `controller.py`
+2. 在 `app/api/v1/__init__.py`（或对应域 `__init__.py`）注册路由
+3. 新表模型需在 `app/alembic/env.py` 中 import，再执行 `python scripts/cli.py revision` / `upgrade`
+4. 需要鉴权的接口使用权限装饰器
+
+#### 示例：模块内分层（同目录）
+
+```python
+# app/api/v1/system/user/model.py
+from app.core.db_base import Base
+from sqlalchemy import Column, String, Integer
+
+class User(Base):
+    __tablename__ = "sys_user"
+    username = Column(String(50), nullable=False, unique=True)
+    email = Column(String(100), nullable=True)
+    status = Column(Integer, nullable=False, default=1)
+
+# app/api/v1/system/user/schema.py
+from pydantic import BaseModel
+from typing import Optional
+
+class UserCreate(BaseModel):
+    username: str
+    email: Optional[str] = None
+    status: int = 1
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: Optional[str]
+    status: int
+
+# app/api/v1/system/user/controller.py
+from fastapi import APIRouter
+from app.core.api_permission import ApiPermission
+from app.core.data_permission import DataPermission
+
+router = APIRouter()
+
+@router.post("/", response_model=UserResponse)
+@ApiPermission("system:user:add")
+async def create_user(user: UserCreate):
+    ...
+
+@router.get("/", response_model=list[UserResponse])
+@ApiPermission("system:user:list")
+@DataPermission(data_scope="dept")
+async def get_users():
+    ...
+```
+
+#### 权限系统使用
+
+```python
+# 数据权限装饰器
+@DataPermission(
+    data_scope="dept",  # 数据范围：dept, user, all, custom
+    dept_field="dept_id",  # 部门字段名
+    user_field="created_by"  # 用户字段名
+)
+async def get_filtered_data():
+    # 会自动根据用户权限过滤数据
+    pass
+
+# API权限装饰器
+@ApiPermission("system:user:edit")
+async def update_user():
+    # 会检查用户是否有对应的API权限
+    pass
+```
+
+### 前端开发
+
+#### 添加新页面
+
+1. 在 `src/views/<域>/` 创建页面组件
+2. 在 `src/api/v1/<域>/` 创建接口封装
+3. 后台菜单管理配置路由（后端菜单驱动时无需改死路由表）
+
+#### 示例：创建用户列表页面
+
+```typescript
+// src/api/v1/system/user.ts
+import request from '/@/utils/request'
+
+export const getUserList = (params: any) => {
+  return request({ url: '/v1/system/user/list', method: 'GET', params })
+}
+
+// src/views/system/user/index.vue
+<template>
+  <div class="user-container">
+    <el-table :data="userList">
+      <el-table-column prop="username" label="用户名" />
+      <el-table-column prop="email" label="邮箱" />
+    </el-table>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { getUserList } from '/@/api/v1/system/user'
+
+const userList = ref([])
+
+onMounted(async () => {
+  const res = await getUserList({})
+  userList.value = res.data
+})
+</script>
+```
+
+> 菜单路由一般由后端菜单下发，在后台「菜单管理」配置即可；仅本地调试时再改 `src/router`。
+
+#### 权限控制
+
+```vue
+<!-- 按钮级权限控制 -->
+<el-button v-auth="'system:user:add'">新增用户</el-button>
+<el-button v-auth="'system:user:edit'">编辑</el-button>
+<el-button v-auth="'system:user:delete'">删除</el-button>
+
+<!-- 批量操作权限控制 -->
+<el-button v-auth="'system:user:delete'" :disabled="selectedRows.length === 0">
+  批量删除
+</el-button>
+
+<!-- 表格配置 -->
+<z-table
+  :columns="columns"
+  :data="tableData"
+  :options="{ stripe: true, border: true }"
+  @selection-change="handleSelectionChange"
+>
+  <!-- 添加选择列 -->
+  { columnType: 'selection', width: '50', align: 'center' }
+</z-table>
+```
+
+#### 日志管理功能
+
+```vue
+<!-- 登录日志页面示例 -->
+<template>
+  <div class="login-record-container">
+    <!-- 搜索条件 -->
+    <div class="search-form">
+      <el-input v-model="queryParams.username" placeholder="用户名" />
+      <el-date-picker v-model="dateRange" type="datetimerange" />
+      <el-button @click="search">查询</el-button>
+      <el-button v-auth="'system:log:login:delete'" @click="batchDelete">
+        批量删除
+      </el-button>
+      <el-button v-auth="'system:log:login:clean'" @click="clearLogs">
+        清理日志
+      </el-button>
+    </div>
+    
+    <!-- 数据表格 -->
+    <z-table
+      :columns="columns"
+      :data="logData"
+      :options="{ stripe: true, border: true }"
+      @selection-change="handleSelectionChange"
+    />
+  </div>
+</template>
+```
+
+---
+
+---
+
+## 📦 部署
+
+### 生产环境部署
+
+#### 使用 Docker Compose（推荐）
+
+```bash
+# 生产环境配置
+docker-compose -f docker-compose.prod.yml up -d
+
+# 查看日志
+docker-compose logs -f backend
+
+# 重启服务
+docker-compose restart backend
+```
+
+#### 手动部署
+
+**后端部署：**
+
+```bash
+# 使用 Gunicorn + Uvicorn
+gunicorn main:app \
+  -w 4 \
+  -k uvicorn.workers.UvicornWorker \
+  -b 0.0.0.0:8100 \
+  --access-logfile logs/access.log \
+  --error-logfile logs/error.log
+```
+
+**前端部署：**
+
+```bash
+# 构建
+npm run build
+
+# 使用 Nginx 部署
+# 将 dist/ 目录内容复制到 Nginx 静态目录
+cp -r dist/* /usr/share/nginx/html/
+```
+
+**Nginx 配置示例：**
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    # 前端静态文件
+    location / {
+        root /usr/share/nginx/html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 后端 API 代理
+    location /api {
+        proxy_pass http://127.0.0.1:18171;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+---
+
+## 🛠️ 常见问题
+
+### 后端问题
+
+**Q: 数据库连接失败？**
+
+A: 检查 `backend/.env` 中 `DATABASE_TYPE` 与 `DATABASE_HOST/PORT/USER/PASSWORD/NAME` 是否匹配实际库；可用 `python scripts/cli.py check` 验证。MySQL/Postgres 需先建好库；SQLite 只需可写目录。
+
+**Q: Redis 连接失败？**
+
+A: 确保 Redis 服务已启动，检查 `REDIS_URI` 配置。
+
+**Q: Celery 任务不执行？**
+
+A: 确保 Celery Worker 和 Beat 都已启动，检查 Redis 连接。
+
+### 前端问题
+
+**Q: 启动报错 "Cannot find module"？**
+
+A: 删除 `node_modules` 和 `package-lock.json`，重新安装依赖。
+
+**Q: 接口请求 404？**
+
+A: 检查 `src/config/` 中的 API 地址配置。
+
+**Q: 权限控制不生效？**
+
+A: 
+1. 确保后台已配置菜单权限，并分配给对应角色
+2. 检查权限编码是否正确（如：`system:user:add`）
+3. 确认用户已分配相应角色
+4. 检查前端 v-auth 指令使用是否正确
+
+**Q: 数据权限不生效？**
+
+A: 
+1. 确保在接口上使用了 `@DataPermission` 装饰器
+2. 检查用户角色的数据权限范围配置
+3. 确认数据表中有对应的部门字段或用户字段
+
+**Q: 日志记录不完整？**
+
+A: 
+1. 确保日志中间件已正确配置
+2. 检查数据库中的日志表是否存在
+3. 确认 Redis 连接正常（用于日志缓存）
+
+---
+
+
+## 公开发布说明
+
+本仓库是 Leon QA Web3 测试工作台的当前源码快照，包含现货、合约、资金、链上资产和 DEX 测试设计、接口场景与业务资料。业务资料目录内包含可导入的 Skills、Prompts 和参考文档；导入过程只读取文档，不执行 Skill 文件。
+
+发布副本已排除历史数据库导出、用户记录、上传附件、运行日志、测试报告、模型密钥、本机环境文件和原仓库 Git 历史。新环境初始化管理员密码必须由部署者自行设置。真实业务测试仍需要经过授权的测试环境、接口文档、业务判据和人工评审。

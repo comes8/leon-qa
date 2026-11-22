@@ -20,7 +20,7 @@ async def create_session(request: Request):
     key = uuid4().hex
     _sessions[key] = {'created': monotonic(), 'orders': {}, 'transfers': {}, 'receipts': {},
                       'free': Decimal('1000'), 'locked': Decimal('0'), 'position': Decimal('5'),
-                      'wallet': Decimal('100'), 'futures_wallet': Decimal('0')}
+                      'wallet': Decimal('100'), 'futures_wallet': Decimal('0'), 'spot_events': []}
     return JSONResponse({'session_id': key, 'environment': 'local_mock'}, status_code=201)
 
 
@@ -34,6 +34,13 @@ def session(request, session_id):
     if session_id not in _sessions:
         raise HTTPException(404, '模拟会话不存在或已过期')
     return _sessions[session_id]
+
+
+@router.delete('/{sid}/session')
+async def delete_session(sid: str, request: Request):
+    session(request, sid)
+    _sessions.pop(sid)
+    return {'session_id': sid, 'deleted': True, 'scope': 'local_synthetic_only'}
 
 
 def number(value):
@@ -52,7 +59,33 @@ def amount(value):
 
 def order_view(order_id, order):
     return {'orderId': order_id, 'status': order['status'], 'origQty': amount(order['quantity']),
-            'executedQty': amount(order['filled']), 'remainingFrozen': amount(order['locked'])}
+            'executedQty': amount(order['filled']), 'remainingFrozen': amount(order['locked']),
+            'canceledQty': amount(order['quantity'] - order['filled'] if order['status'] == 'CANCELED' else Decimal('0')),
+            'activeRemainingQty': amount(order['quantity'] - order['filled'] if order['status'] in {'NEW', 'PARTIALLY_FILLED'} else Decimal('0'))}
+
+
+def spot_event(state, oid, kind, value):
+    identity = uuid4().hex
+    state.setdefault('spot_events', []).append({'eventId': identity, 'orderId': oid, 'kind': kind,
+        'amount': amount(value), 'asset': 'QUOTE', 'freeAfter': amount(state['free']), 'lockedAfter': amount(state['locked'])})
+    return identity
+
+
+@router.get('/{sid}/spot/balances')
+async def spot_balances(sid: str, request: Request):
+    state = session(request, sid)
+    return {'asset': 'QUOTE', 'free': amount(state['free']), 'locked': amount(state['locked']), 'profile': 'local-synthetic-spot-v1'}
+
+
+@router.get('/{sid}/spot/events/{oid}')
+async def spot_events(sid: str, oid: str, request: Request):
+    state = session(request, sid)
+    if oid not in state['orders']:
+        return JSONResponse({'code': 'ORDER_NOT_FOUND'}, 404)
+    records = [event for event in state.get('spot_events', []) if event['orderId'] == oid]
+    return {'orderId': oid, 'records': records, 'spent': amount(sum((Decimal(e['amount']) for e in records if e['kind'] == 'spent'), Decimal('0'))),
+            'released': amount(sum((Decimal(e['amount']) for e in records if e['kind'] == 'released'), Decimal('0'))),
+            'observation': 'local synthetic append-only events; not an independent production ledger'}
 
 
 @router.post('/{sid}/spot/orders')
@@ -71,6 +104,7 @@ async def place(sid: str, body: dict, request: Request):
                             'locked': frozen, 'released': Decimal('0'), 'status': 'NEW'}
     state['free'] -= frozen
     state['locked'] += frozen
+    spot_event(state, oid, 'frozen', frozen)
     return JSONResponse(order_view(oid, state['orders'][oid]), 201)
 
 
@@ -85,8 +119,10 @@ async def order(sid: str, oid: str, request: Request):
             return JSONResponse({'code': 'ORDER_NOT_CANCELABLE'}, 409)
         state['free'] += current['locked']
         state['locked'] -= current['locked']
-        current['released'] += current['locked']
+        released = current['locked']
+        current['released'] += released
         current.update(locked=Decimal('0'), status='CANCELED')
+        spot_event(state, oid, 'released', released)
     return order_view(oid, current)
 
 
@@ -103,7 +139,8 @@ async def fill(sid: str, oid: str, body: dict, request: Request):
     current['locked'] -= qty * current['price']
     state['locked'] -= qty * current['price']
     current['status'] = 'FILLED' if current['filled'] == current['quantity'] else 'PARTIALLY_FILLED'
-    return order_view(oid, current)
+    fill_id = spot_event(state, oid, 'spent', qty * current['price'])
+    return {**order_view(oid, current), 'fillId': fill_id}
 
 
 @router.get('/{sid}/spot/ledger/{oid}')

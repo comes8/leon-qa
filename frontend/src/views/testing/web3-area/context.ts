@@ -1,5 +1,5 @@
-export type WorkspaceContext = { project?: string; workflow?: string; design?: string; env?: string; dataset?: string; job?: string };
-const fields = ['project', 'workflow', 'design', 'env', 'dataset', 'job'] as const;
+export type WorkspaceContext = { project?: string; workflow?: string; design?: string; plan?: string; env?: string; dataset?: string; job?: string };
+const fields = ['project', 'workflow', 'design', 'plan', 'env', 'dataset', 'job'] as const;
 export function cleanContext(value: Record<string, unknown>): WorkspaceContext {
 	const result: WorkspaceContext = {};
 	for (const key of fields) {

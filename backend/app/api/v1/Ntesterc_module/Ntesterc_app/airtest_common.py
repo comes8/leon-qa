@@ -356,8 +356,29 @@ def get_sms(now_time: int, sms_device_id: str, timeout: int = 3000000, interval:
 
 
 # 设备硬编码映射
-PHONE_BY_DEVICE = {}  # Configure your own authorized test-device data.
+PHONE_BY_DEVICE = {
+    "10CE6R0NP7001KX": "19065402394",
+    "10CE970KH2002YQ": "18127803668",
+    "10AE8D2RXP001CT": "18148757543",
+    "10CE9F1UHC0037A": "19928355488",
+    "10AE650C38000QS": "13143723397",
+    "10CE7U0CTD0023A": "19124175810",
+}
 
-EMAIL_BY_DEVICE = {}  # Configure your own authorized test-device data.
+EMAIL_BY_DEVICE = {
+    "10CE6R0NP7001KX": "liyong@bluepoch.com",
+    "10CE970KH2002YQ": "z19928355488@gmail.com",
+    "10AE8D2RXP001CT": "ljy951697407@163.com",
+    "10CE9F1UHC0037A": "linjiyong996@gmail.com",
+    "10AE650C38000QS": "3110316730@qq.com",
+    "10CE7U0CTD0023A": "ljy951697407@163.com",
+}
 
-SMS_DEVICE_BY_TEST_DEVICE = {}  # Configure your own authorized test-device data.
+SMS_DEVICE_BY_TEST_DEVICE = {
+    "10CE6R0NP7001KX": "6HJDU19723002103",
+    "10CE970KH2002YQ": "7fb1efb",
+    "10AE8D2RXP001CT": "f87c1a21",
+    "10CE9F1UHC0037A": "R5CW32RABBR",
+    "10AE650C38000QS": "AXYFVB1C03005594",
+    "10CE7U0CTD0023A": "22X0219924002278",
+}

@@ -321,6 +321,11 @@ class StepExecutor:
             result.error = f"接口 id={api_id} 不存在"
             return result
 
+        interface_plan_id = (getattr(api_row, 'document', None) or {}).get('interface_plan_id')
+        if interface_plan_id:
+            from app.api.v1.Ntesterc_module.Ntesterc_web3.interface_service import guard_published_api
+            await guard_published_api(api_row.id, interface_plan_id, self.user_id, self.env_id, self.ctx)
+
         api_cfg = api_row.req or {}
 
         # 变量替换：先用步骤上下文（${var}/{{var}}），再走环境/全局变量 handle_var

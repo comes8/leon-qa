@@ -112,15 +112,19 @@ def step_url(url, path_variables):
 async def ensure_schema():
     from .assets import ensure_assets_schema
     from .design_model import ensure_design_schema
+    from .interface_model import ensure_interface_schema
     async with engine.begin() as connection:
         await connection.run_sync(lambda conn: Web3WorkflowModel.__table__.create(conn, checkfirst=True))
     await ensure_assets_schema()
     await ensure_design_schema()
+    await ensure_interface_schema()
 
 
 async def recover_interrupted():
     from .design_service import recover_design_jobs
+    from .interface_service import recover as recover_interfaces
     await recover_design_jobs()
+    await recover_interfaces()
     async with async_session_factory() as db:
         rows = (await db.scalars(select(Web3WorkflowModel).where(Web3WorkflowModel.status.in_(BUSY)))).all()
         for row in rows:
@@ -145,6 +149,9 @@ async def owned(db, run_id, user_id):
     ))
     if row is None:
         raise HTTPException(404, '测试任务不存在')
+    from .interface_model import InterfacePlan
+    if await db.scalar(select(InterfacePlan.id).where(InterfacePlan.workflow_id == row.id)):
+        raise HTTPException(409, '此任务来自业务设计接口适配，请从Web3接口场景入口操作，保留版本检查')
     await ProjectService._check_project_member(row.project_id, user_id, db)
     return row
 
@@ -437,7 +444,7 @@ async def validate_plan(db, row):
     return problems
 
 
-async def approve(db, row, body):
+async def approve(db, row, body, *, api_document_extra=None):
     if row.status != 'review_ready' or row.revision != body.revision:
         raise HTTPException(409, '请刷新并完成用例评审')
     cases = {case['case_id']: case for case in row.draft['scenarios']}
@@ -474,7 +481,7 @@ async def approve(db, row, body):
                 req['config'] = {**(req.get('config') or {}), 'retry': 0, 'allow_redirects': False}
                 url = step_url(source.url, step.get('path_variables') or {})
                 api = ApiModel(name=step['name'], url=url, req=req, api_service_id=row.service_id,
-                    document={'source': 'web3_workflow', 'workflow_id': row.id, 'source_api_id': source.id}, **audit)
+                    document={'source': 'web3_workflow', 'workflow_id': row.id, 'source_api_id': source.id, **(api_document_extra or {})}, **audit)
                 db.add(api)
                 await db.flush()
                 requests[str(api.id)] = fingerprint({'url': url, 'req': req})
@@ -533,7 +540,7 @@ async def verify_targets(db, row):
                 raise HTTPException(400, '接口地址缺少协议或环境变量')
 
 
-async def execute_plan(db, row):
+async def execute_plan(db, row, *, before_step=None, checkpoint=None):
     await verify_targets(db, row)
     publication = row.publication or {}
     if not publication.get('cases'):
@@ -551,7 +558,7 @@ async def execute_plan(db, row):
     row.executions = [*(row.executions or []), deepcopy(receipt)]
     await db.commit()
     native_cases = []
-    for entry in publication['cases']:
+    for case_index, entry in enumerate(publication['cases']):
         case = await db.get(ApiCaseModel, entry['native_case_id'])
         if case is None or not case.enabled_flag:
             raise ValueError('已发布用例被移除，请重新生成')
@@ -562,12 +569,29 @@ async def execute_plan(db, row):
         case_result = {**entry, 'steps': [], 'status': 'passed'}
         menu_id = uuid4().hex
         stopped = False
-        for step in case.script:
+        for step_index, step in enumerate(case.script):
             receipt['total_steps'] += 1
             if stopped:
                 case_result['steps'].append({'name': step['name'], 'status': 'blocked', 'error': '前置步骤失败'})
                 receipt['blocked_steps'] += 1
                 continue
+            if before_step:
+                try:
+                    await before_step(step, context_vars)
+                except Exception:
+                    # A request-boundary stop is not a failed business assertion.
+                    # Keep all completed evidence and explicitly list what never ran.
+                    pending_steps = case.script[step_index:]
+                    case_result['status'] = 'interrupted'
+                    case_result['steps'].extend({'name': s['name'], 'status': 'blocked', 'error': '执行门禁/停止：本步骤未发出请求'} for s in pending_steps)
+                    receipt['blocked_steps'] += len(pending_steps)
+                    receipt['total_steps'] += len(pending_steps) - 1
+                    partial = {**deepcopy(receipt), 'in_progress_case': deepcopy(case_result),
+                               'unstarted_cases': deepcopy(publication['cases'][case_index + 1:])}
+                    row.executions = [*(row.executions or [])[:-1], partial]
+                    if checkpoint:
+                        await checkpoint(partial)
+                    raise
             result = await executor.execute(step)
             detail = redact(result.to_dict())
             detail['status'] = 'passed' if result.success else 'failed'
@@ -579,6 +603,10 @@ async def execute_plan(db, row):
             if not result.success:
                 stopped = True
                 case_result['status'] = 'failed'
+            if checkpoint:
+                partial = {**deepcopy(receipt), 'in_progress_case': deepcopy(case_result)}
+                row.executions = [*(row.executions or [])[:-1], partial]
+                await checkpoint(partial)
         native_cases.append({'name': case.name, 'uuid': menu_id, 'script': case.script, 'config': {'env_id': row.environment_id},
                              'status': 1 if case_result['status'] == 'passed' else 0,
                              'pass': sum(item['status'] == 'passed' for item in case_result['steps']),

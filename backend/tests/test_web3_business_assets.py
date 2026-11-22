@@ -79,7 +79,7 @@ class BundleSnapshotTests(unittest.TestCase):
     def test_real_pack_counts_and_reference_contents(self):
         result = A.scan_bundle(A.SOURCE_ROOT)
         self.assertEqual(result['counts']['skills'], 9)
-        self.assertEqual(result['counts']['prompts'], 14)
+        self.assertEqual(result['counts']['prompts'], 15)
         self.assertEqual(result['counts']['references'], 25)
         self.assertEqual(len({s['key'] for s in result['skills']}), 9)
         self.assertTrue(all(s['integration'] == 'imported_not_bound' for s in result['skills']))
