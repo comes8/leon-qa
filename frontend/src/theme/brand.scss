@@ -1,0 +1,30 @@
+:root {
+  --el-bg-color-page: #f1f5f7;
+  --app-shadow-aside: 2px 0 22px rgba(17, 30, 45, 0.11);
+}
+
+body:has(.login) > .app-watermark {
+  display: none;
+}
+
+.layout-aside {
+  .el-menu-item.is-active,
+  .el-sub-menu.is-active > .el-sub-menu__title {
+    color: #84e4c0;
+  }
+
+  .el-menu-item.is-active {
+    box-shadow: inset 3px 0 #70dbb6;
+  }
+}
+
+[data-theme='dark'] {
+  --next-bg-main: #111923;
+  --next-color-disabled: #17212e;
+  --next-color-columns-menu-bar: #0e1620;
+  --next-color-primary: #223143;
+  --next-color-hover: #24364a;
+  --next-border-black: #2b3b4d;
+  --next-color-bar: #e4edf5;
+  --next-text-color-regular: #b5c3d2;
+}

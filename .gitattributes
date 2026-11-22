@@ -1,0 +1,12 @@
+* text=auto
+*.sh text eol=lf
+leonqa text eol=lf
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.jar binary
+*.xlsx binary

@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password": "__SET_AT_FIRST_START__",
+    "nickname": "Leon QA Admin",
+    "user_type": 10,
+    "status": 1,
+    "enabled_flag": 1,
+    "created_by": 1,
+    "updated_by": 1,
+    "gender": 0
+  }
+]

@@ -1,0 +1,78 @@
+{
+  "title": "Leon QA 第三阶段：本地网页与执行器验收",
+  "base_url": "http://127.0.0.1:18170",
+  "scenarios": [
+    {
+      "name": "从现有工作台进入本地套件运行",
+      "priority": "P0",
+      "preconditions": ["平台、数据库、Docker 和执行器已启动", "使用本机既有登录会话，选择已加入的测试项目"],
+      "steps": [
+        {"id": "entry", "name": "打开工作台", "action": "goto", "path": "/api-automation/web3"},
+        {"id": "open_runner", "name": "进入运行页", "action": "click", "target": {"role": "button", "name": "本地套件运行"}, "assertions": [{"type": "url_contains", "expected": "/api-automation/runner"}, {"type": "text_visible", "text": "不连接真实交易所"}]}
+      ]
+    },
+    {
+      "name": "网页提交常规回归并取得真实报告",
+      "priority": "P0",
+      "steps": [
+        {"id": "submit_regression", "name": "运行常规回归", "action": "click", "target": {"role": "button", "name": "运行常规回归"}},
+        {"id": "wait_report", "name": "等待后端完成与导入", "action": "wait_for", "target": {"text": "回归通过"}},
+        {"id": "check_cases", "name": "查看 14 条业务用例及清理状态", "action": "click", "target": {"role": "tab", "name": "业务用例与断言"}, "assertions": [{"type": "text_visible", "text": "资源 已清理"}, {"type": "count", "target": {"css": ".run-detail button[aria-label^='查看用例 ']"}, "expected": 14}]}
+      ]
+    },
+    {
+      "name": "核对精确金额、请求响应与证据下载",
+      "priority": "P0",
+      "steps": [
+        {"id": "normal_case", "name": "选择正常划转", "action": "click", "target": {"role": "button", "name": "查看用例 TestTransferNormal"}},
+        {"id": "values", "name": "检查最小单位金额", "action": "assert", "assertions": [{"type": "text_visible", "text": "10000000000"}, {"type": "text_visible", "text": "minor:TESTUSD"}]},
+        {"id": "http_evidence", "name": "展开接口记录", "action": "click", "target": {"text": "查看接口请求与响应（4 条）"}},
+        {"id": "download_bundle", "name": "下载本次用例证据并与原文件核对", "action": "click", "target": {"role": "button", "name": "下载用例证据"}}
+      ]
+    },
+    {
+      "name": "刷新后恢复同一运行与已保存的历史",
+      "priority": "P0",
+      "description": "记录当前可见运行号及 URL，刷新浏览器，仍打开同一任务且不新增记录。",
+      "steps": [{"id": "refresh_job", "name": "刷新后核对运行号", "action": "assert", "assertions": [{"type": "url_contains", "expected": "job="}, {"type": "text_visible", "text": "回归通过"}]}]
+    },
+    {
+      "name": "复用配置产生新任务并保留原报告",
+      "priority": "P0",
+      "steps": [
+        {"id": "reuse", "name": "复用已完成任务配置", "action": "click", "target": {"role": "button", "name": "复用运行配置"}},
+        {"id": "new_run", "name": "创建新运行", "action": "click", "target": {"role": "button", "name": "运行常规回归"}},
+        {"id": "new_pass", "name": "等待新任务通过并比较两个独立运行号", "action": "wait_for", "target": {"text": "回归通过"}}
+      ]
+    },
+    {
+      "name": "故障自检保留预期 FAIL 与资金核对失败证据",
+      "priority": "P0",
+      "steps": [
+        {"id": "selftest_type", "name": "选择故障自检", "action": "check", "target": {"role": "radio", "name": "故障自检"}},
+        {"id": "selftest_run", "name": "运行自检", "action": "click", "target": {"role": "button", "name": "运行故障自检"}},
+        {"id": "selftest_result", "name": "确认已检出预期缺陷", "action": "wait_for", "target": {"text": "自检通过 · 已检出缺陷"}},
+        {"id": "selftest_cases", "name": "查看三类精确断言证据", "action": "click", "target": {"role": "tab", "name": "业务用例与断言"}, "assertions": [{"type": "text_visible", "text": "原始门禁为 FAIL"}, {"type": "text_visible", "text": "9999999999"}]}
+      ]
+    },
+    {
+      "name": "执行中取消以及离线排队取消",
+      "priority": "P0",
+      "description": "执行器领取任务后从页面确认取消并核对进程与资源清理状态；执行器离线时另建排队任务取消，确认没有启动进程。仅操作本次验收任务。实际容器存在时的归属清理另由第二阶段验收覆盖，本阶段不把早期取消等同于删除过容器。",
+      "steps": [
+        {"id": "cancel_running", "name": "取消所选运行", "action": "click", "target": {"role": "button", "name": "取消任务"}},
+        {"id": "confirm_cancel", "name": "确认取消本次任务", "action": "click", "target": {"role": "button", "name": "确认取消任务"}},
+        {"id": "cancelled", "name": "等待取消和清理完成", "action": "wait_for", "target": {"text": "已取消"}, "assertions": [{"type": "text_visible", "text": "无有效测试结论"}]}
+      ]
+    },
+    {
+      "name": "短执行超时不显示为通过",
+      "priority": "P0",
+      "steps": [
+        {"id": "timeout", "name": "设置 1 秒超时", "action": "fill", "target": {"label": "执行超时（秒）"}, "value": "1"},
+        {"id": "timeout_run", "name": "提交短超时回归", "action": "click", "target": {"role": "button", "name": "运行常规回归"}},
+        {"id": "timeout_result", "name": "确认超时和无有效结论", "action": "wait_for", "target": {"text": "已超时"}, "assertions": [{"type": "text_visible", "text": "无有效测试结论"}]}
+      ]
+    }
+  ]
+}

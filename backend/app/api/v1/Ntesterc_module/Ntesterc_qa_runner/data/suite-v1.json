@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "leon.qa.catalog",
+  "project_id": "leon-qa-kit",
+  "suites": [
+    {
+      "suite_id": "funds-transfer-v1",
+      "name": "同用户资金账户与现货账户内部划转",
+      "suite_version": "1.0.0",
+      "profile": "local-synthetic-v1",
+      "package": "github.com/comes8/leon-qa-kit/tests/acceptance",
+      "required_tests": [
+        "TestTransferNormal",
+        "TestReverseTransfer",
+        "TestInsufficientBalance",
+        "TestInvalidAmounts",
+        "TestSequentialDuplicate",
+        "TestChangedPayload",
+        "TestConcurrentDuplicate",
+        "TestConcurrentNoOverspend",
+        "TestRollbackAtomicity",
+        "TestTimeoutAfterCommit",
+        "TestCrossUserRejected",
+        "TestDatasetLifecycle",
+        "TestMinimumUnit",
+        "TestBidirectionalConcurrency"
+      ],
+      "supported_run_kinds": [
+        "regression",
+        "selftest"
+      ],
+      "selftest_target": "TestTransferNormal"
+    }
+  ]
+}

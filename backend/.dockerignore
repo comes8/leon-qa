@@ -1,0 +1,14 @@
+.env
+.env.*.local
+.venv
+__pycache__
+**/__pycache__
+*.db*
+logs
+uploads
+files
+app/static
+static/upload
+static/media
+static/api_results
+sql/*.sql

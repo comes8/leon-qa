@@ -1,0 +1,232 @@
+/**
+ * 首页看板API接口
+ */
+import request from '/@/utils/request';
+
+// 核心统计数据接口
+export interface CoreStats {
+  projects: {
+    total: number;
+    active: number;
+    monthly_new: number;
+  };
+  test_cases: {
+    total: number;
+    weekly_new: number;
+    pass_rate: number;
+  };
+  ai_executions: {
+    total: number;
+    monthly_generated: number;
+    success_rate: number;
+  };
+  users: {
+    total: number;
+    online: number;
+    monthly_active: number;
+  };
+}
+
+// 执行趋势数据接口
+export interface ExecutionTrend {
+  date: string;
+  count: number;
+  success_rate: number;
+}
+
+export interface ExecutionTrends {
+  api_tests: ExecutionTrend[];
+  ui_tests: ExecutionTrend[];
+}
+
+// 数据工厂统计接口
+export interface ToolUsage {
+  name: string;
+  count: number;
+}
+
+export interface CategoryDistribution {
+  category: string;
+  count: number;
+  percentage: number;
+}
+
+export interface DataFactoryStats {
+  top_tools: ToolUsage[];
+  category_distribution: CategoryDistribution[];
+}
+
+// 评审统计接口
+export interface ReviewStats {
+  status_distribution: {
+    pending: number;
+    in_progress: number;
+    completed: number;
+    cancelled: number;
+  };
+  completion_trend: Array<{
+    date: string;
+    completion_rate: number;
+  }>;
+}
+
+// 项目活跃度接口
+export interface ActiveProject {
+  id: number;
+  name: string;
+  last_activity: string | null;
+}
+
+export interface ProjectActivity {
+  active_projects: ActiveProject[];
+  module_usage: {
+    test_cases: number;
+    api_testing: number;
+    ui_automation: number;
+    ai_intelligence: number;
+    data_factory: number;
+    reviews: number;
+  };
+}
+
+// 通知接口
+export interface RecentNotification {
+  title: string;
+  status: string;
+  created_at: string;
+}
+
+export interface NotificationData {
+  notifications: RecentNotification[];
+  unread_count: number;
+}
+
+// API接口统计接口
+export interface ApiInterfaceStats {
+  project_name: string;
+  total_interfaces: number;
+  success_count: number;
+  failed_count: number;
+  success_rate: number;
+}
+
+export interface ApiInterfaceStatsData {
+  interface_stats: ApiInterfaceStats[];
+  total_stats: {
+    total_projects: number;
+    total_interfaces: number;
+    total_success: number;
+    total_failed: number;
+    overall_success_rate: number;
+  };
+}
+
+export interface LlmUsageOverview {
+  total_tokens: number;
+  cached_tokens: number;
+  uncached_tokens: number;
+  prompt_tokens: number;
+  completion_tokens: number;
+  cache_hit_rate: number;
+  request_count: number;
+  error_count: number;
+}
+
+export interface LlmUsageByModel {
+  model_name: string;
+  provider: string;
+  total_tokens: number;
+  cached_tokens: number;
+  request_count: number;
+  error_count: number;
+}
+
+export interface LlmUsageByDate {
+  date: string;
+  total_tokens: number;
+  cached_tokens: number;
+  request_count: number;
+  error_count: number;
+}
+
+export interface LlmUsageByCategory {
+  category: string;
+  source: string;
+  total_tokens: number;
+  request_count: number;
+  error_count: number;
+}
+
+export interface LlmUsageRequestItem {
+  id: number;
+  created_at: string | null;
+  model_name: string;
+  provider: string;
+  source: string;
+  source_label: string;
+  total_tokens: number;
+  cached_tokens: number;
+  status: string;
+  error_message?: string | null;
+  latency_ms?: number | null;
+}
+
+export interface LlmUsageStats {
+  tab: string;
+  days: number;
+  overview: LlmUsageOverview;
+  by_model: LlmUsageByModel[];
+  by_date: LlmUsageByDate[];
+  by_category: LlmUsageByCategory[];
+  recent_requests: LlmUsageRequestItem[];
+}
+
+export function useDashboardApi() {
+  return {
+    getOverview: () =>
+      request({
+        url: '/v1/Ntesterc_dashboard/overview',
+        method: 'GET',
+      }),
+    getExecutionTrends: (params?: { days?: number }) =>
+      request({
+        url: '/v1/Ntesterc_dashboard/execution-trends',
+        method: 'GET',
+        params,
+      }),
+    getDataFactoryStats: () =>
+      request({
+        url: '/v1/Ntesterc_dashboard/data-factory-stats',
+        method: 'GET',
+      }),
+    getReviewStats: () =>
+      request({
+        url: '/v1/Ntesterc_dashboard/review-stats',
+        method: 'GET',
+      }),
+    getProjectActivity: () =>
+      request({
+        url: '/v1/Ntesterc_dashboard/project-activity',
+        method: 'GET',
+      }),
+    getRecentNotifications: (params?: { limit?: number }) =>
+      request({
+        url: '/v1/Ntesterc_dashboard/recent-notifications',
+        method: 'GET',
+        params,
+      }),
+    getApiInterfaceStats: () =>
+      request({
+        url: '/v1/Ntesterc_dashboard/api-interface-stats',
+        method: 'GET',
+      }),
+    getLlmUsage: (params?: { days?: number; tab?: string }) =>
+      request({
+        url: '/v1/Ntesterc_dashboard/llm-usage',
+        method: 'GET',
+        params,
+      }),
+  };
+}
+
+export const dashboardApi = useDashboardApi();

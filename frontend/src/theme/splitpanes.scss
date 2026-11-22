@@ -1,0 +1,19 @@
+@import "splitpanes/dist/splitpanes.css";
+
+.splitpanes.default-theme .splitpanes__pane {
+  background-color: var(--el-bg-color) !important;
+}
+
+.splitpanes.default-theme .splitpanes__splitter {
+  background-color: var(--el-bg-color) !important;
+  border-left: 1px solid var(--el-border-color) !important;
+}
+
+.default-theme.splitpanes--horizontal>.splitpanes__splitter, .default-theme .splitpanes--horizontal>.splitpanes__splitter {
+  border-top: 1px solid var(--el-border-color);
+}
+
+.splitpanes__pane .content {
+  padding: 0 6px;
+}
+

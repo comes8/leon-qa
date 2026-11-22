@@ -1,0 +1,55 @@
+.ui-badge-circle {
+  font-size: 12px;
+  display: inline-flex;
+  margin-left: 4px;
+  justify-content: center;
+  align-items: center;
+  max-width: 16px;
+  max-height: 16px;
+  border-radius: 100px;
+  padding: 0 4px;
+  color: var(--el-bg-color);
+  background-color: var(--el-color-primary);
+}
+
+.ui-badge-status-dot {
+  position: relative;
+  top: -1px;
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 5px;
+  vertical-align: middle;
+  border-radius: 50%;
+  background: var(--el-color-primary);
+}
+
+.block-title {
+  position: relative;
+  padding-left: 11px;
+  font-size: 14px;
+  font-weight: 600;
+  height: 24px;
+  line-height: 24px;
+  background: var(--el-fill-color-lighter);
+  color: var(--el-text-color-primary);
+  border-left: 3px solid var(--el-color-primary);
+  border-radius: 0 var(--app-radius-sm) var(--app-radius-sm) 0;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  transition: background-color var(--app-transition-snappy);
+}
+
+.default-card-info {
+  padding: 15px 16px;
+  background-color: var(--el-bg-color);
+  border-radius: var(--app-radius-md);
+  margin-bottom: 20px;
+  box-shadow: var(--app-shadow-content);
+  border: 1px solid var(--el-border-color-lighter);
+  border-left: 4px solid var(--el-color-primary);
+  transition:
+    box-shadow var(--app-transition-smooth),
+    border-color var(--app-transition-snappy);
+}

@@ -1,0 +1,52 @@
+name: leon-qa
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  backend:
+    build:
+      context: ./backend
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18171:8100"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD:?Set INITIAL_ADMIN_PASSWORD in .env}
+      DATABASE_TYPE: sqlite
+      DATABASE_NAME: /data/leonqa.db
+      REDIS_URI: redis://redis:6379/4
+      CELERY_BROKER_URL: redis://redis:6379/5
+      CELERY_RESULT_BACKEND: redis://redis:6379/5
+      DB_AUTO_INIT: "true"
+      GRANT_ADMIN_TO_OAUTH_USER: "false"
+      BASE_URL: http://127.0.0.1:18171
+      LEON_QA_BUSINESS_ASSETS: /resources/web3-cex-business-skills
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - database_data:/data
+      - upload_data:/app/static/upload
+      - file_data:/app/files
+      - ./resources:/resources:ro
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18170:80"
+    depends_on:
+      - backend
+volumes:
+  database_data:
+  redis_data:
+  upload_data:
+  file_data:

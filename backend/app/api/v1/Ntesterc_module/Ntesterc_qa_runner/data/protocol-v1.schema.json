@@ -1,0 +1,716 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://leon-qa.invalid/protocol/v1/schema.json",
+  "title": "Leon QA local execution protocol 1.0.0",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/run"
+    },
+    {
+      "$ref": "#/$defs/case"
+    },
+    {
+      "$ref": "#/$defs/catalog"
+    },
+    {
+      "$ref": "#/$defs/error"
+    },
+    {
+      "$ref": "#/$defs/request"
+    }
+  ],
+  "$defs": {
+    "assertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rule_id",
+        "label",
+        "subject",
+        "operator",
+        "expected",
+        "actual",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rule_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operator": {
+          "enum": [
+            "eq",
+            "gte"
+          ]
+        },
+        "expected": {},
+        "actual": {},
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "unit"
+            ],
+            "properties": {
+              "unit": {
+                "pattern": "^minor:"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "expected": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^-?[0-9]+$"
+              },
+              "actual": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^-?[0-9]+$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "dataset_id",
+        "accounts",
+        "transfers",
+        "ledger"
+      ],
+      "properties": {
+        "dataset_id": {
+          "type": "string"
+        },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "transfers": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "ledger": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reason",
+        "exit_code",
+        "passed",
+        "failed",
+        "missing_mandatory"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "ENV_ERROR",
+            "NO_TESTS"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exit_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "passed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_mandatory": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit",
+        "dirty",
+        "sha256"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dirty": {
+          "type": "boolean"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^([a-f0-9]{64})?$"
+        },
+        "manifest_error": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "suite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "suite_id",
+        "name",
+        "suite_version",
+        "profile",
+        "package",
+        "required_tests",
+        "supported_run_kinds",
+        "selftest_target"
+      ],
+      "properties": {
+        "suite_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suite_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "package": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_tests": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "supported_run_kinds": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "regression",
+              "selftest"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "selftest_target": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "case_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "status",
+        "evidence_file",
+        "assertions_passed",
+        "assertions_failed"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "evidence_file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assertions_passed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "assertions_failed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "mutation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mutation",
+        "mutation_detected",
+        "target_case",
+        "expected_gate_status",
+        "evidence_rules"
+      ],
+      "properties": {
+        "mutation": {
+          "const": "credit_short"
+        },
+        "mutation_detected": {
+          "type": "boolean"
+        },
+        "target_case": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_gate_status": {
+          "const": "FAIL"
+        },
+        "evidence_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "document_type",
+        "project_id",
+        "suite_id",
+        "suite_version",
+        "run_id",
+        "run_kind",
+        "profile",
+        "status",
+        "reason",
+        "exit_code",
+        "started_at",
+        "finished_at",
+        "evidence_dir",
+        "source",
+        "required_tests",
+        "gate_result",
+        "cases",
+        "artifacts",
+        "evidence_errors"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "document_type": {
+          "const": "leon.qa.run"
+        },
+        "project_id": {
+          "const": "leon-qa-kit"
+        },
+        "suite_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suite_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "run_kind": {
+          "enum": [
+            "regression",
+            "selftest"
+          ]
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "ENV_ERROR",
+            "NO_TESTS"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exit_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_dir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "diagnostic_filter": {
+          "type": "string"
+        },
+        "required_tests": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "gate_result": {
+          "$ref": "#/$defs/gate"
+        },
+        "cases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/case_summary"
+          }
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "evidence_errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "selftest": {
+          "$ref": "#/$defs/mutation"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "run_kind": {
+                "const": "selftest"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "selftest"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "selftest"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "document_type",
+        "project_id",
+        "suite_id",
+        "suite_version",
+        "run_id",
+        "run_kind",
+        "case_id",
+        "profile",
+        "dataset_id",
+        "status",
+        "failed",
+        "before",
+        "after",
+        "assertions",
+        "http_events",
+        "service_logs",
+        "mysql_log",
+        "metadata"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "document_type": {
+          "const": "leon.qa.case"
+        },
+        "project_id": {
+          "const": "leon-qa-kit"
+        },
+        "suite_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suite_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "run_kind": {
+          "enum": [
+            "regression",
+            "selftest"
+          ]
+        },
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dataset_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "failed": {
+          "type": "boolean"
+        },
+        "before": {
+          "$ref": "#/$defs/snapshot"
+        },
+        "after": {
+          "$ref": "#/$defs/snapshot"
+        },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assertion"
+          }
+        },
+        "http_events": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "service_logs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mysql_log": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metadata": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "document_type",
+        "project_id",
+        "suites"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "document_type": {
+          "const": "leon.qa.catalog"
+        },
+        "project_id": {
+          "const": "leon-qa-kit"
+        },
+        "suites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/suite"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "document_type",
+        "code",
+        "message",
+        "exit_code"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "document_type": {
+          "const": "leon.qa.error"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exit_code": {
+          "const": 2
+        }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "document_type",
+        "project_id",
+        "suite",
+        "run_id",
+        "run_kind",
+        "project_root",
+        "output_dir",
+        "requested_at"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "document_type": {
+          "const": "leon.qa.request"
+        },
+        "project_id": {
+          "const": "leon-qa-kit"
+        },
+        "suite": {
+          "$ref": "#/$defs/suite"
+        },
+        "run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "run_kind": {
+          "enum": [
+            "regression",
+            "selftest"
+          ]
+        },
+        "project_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "output_dir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "diagnostic_filter": {
+          "type": "string"
+        },
+        "requested_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

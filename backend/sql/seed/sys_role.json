@@ -1,0 +1,38 @@
+[
+  {
+    "role_name": "超级管理员",
+    "role_key": "admin",
+    "role_sort": 0,
+    "data_scope": 4,
+    "status": 1,
+    "remark": "超级管理员角色，拥有所有权限",
+    "id": 1,
+    "created_by": 1,
+    "updated_by": 1,
+    "enabled_flag": 1
+  },
+  {
+    "role_name": "普通角色",
+    "role_key": "user",
+    "role_sort": 0,
+    "data_scope": 4,
+    "status": 1,
+    "remark": null,
+    "id": 16,
+    "created_by": 1,
+    "updated_by": 1,
+    "enabled_flag": 1
+  },
+  {
+    "role_name": "管理员",
+    "role_key": "admin1",
+    "role_sort": 0,
+    "data_scope": 4,
+    "status": 1,
+    "remark": null,
+    "id": 17,
+    "created_by": 1,
+    "updated_by": 1,
+    "enabled_flag": 1
+  }
+]
